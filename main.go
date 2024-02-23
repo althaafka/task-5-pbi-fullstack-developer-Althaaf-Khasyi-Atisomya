@@ -11,6 +11,8 @@ func main() {
 	database.Connect()
 
 	r.POST("/users/register", usercontroller.Register)
+	r.POST("/users/login", usercontroller.Login)
+	r.PUT("/users/:userId", usercontroller.Update)
 
 	r.Run()
 }
