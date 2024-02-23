@@ -10,7 +10,7 @@ func main() {
 	r := gin.Default()
 	database.Connect()
 
-	r.GET("/api/users/register", usercontroller.Register)
+	r.POST("/users/register", usercontroller.Register)
 
 	r.Run()
 }
