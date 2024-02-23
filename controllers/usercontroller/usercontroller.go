@@ -18,7 +18,7 @@ func Register(c *gin.Context) {
 	}
 
 	var existingUser models.User
-	if err := database.DB.Where("email = ?", user.Username, user.Email).First(&existingUser).Error; err == nil {
+	if err := database.DB.Where("email = ?", user.Email).First(&existingUser).Error; err == nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
 		return
 	}
@@ -37,8 +37,14 @@ func Login(c *gin.Context) {
 	}
 
 	var existingUser models.User
-	if err := database.DB.Where("email = ? AND password = ?", user.Username, user.Password).First(&existingUser).Error; err != nil {
+	if err := database.DB.Where("email = ?", user.Email).First(&existingUser).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	//check password
+	if existingUser.Password != user.Password {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		return
 	}
 
