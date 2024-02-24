@@ -13,11 +13,12 @@ func SetupRouter() *gin.Engine {
         router.POST("/users/register", usercontroller.Register)
         router.POST("/users/login", usercontroller.Login)
         router.PUT("/users/:userId", middlewares.AuthMiddleware(), usercontroller.Update)
-        // userRouter.DELETE("/:userId", middlewares.AuthMiddleware(), usercontroller.Delete)
-        router.POST("/photos", productcontroller.Create)
-        router.GET("/photos", productcontroller.Show)
-        router.PUT("/photos/:photoId", productcontroller.Update)
-        router.DELETE("/photos/:photoId", productcontroller.Delete)
+        // router.DELETE("/:userId", middlewares.AuthMiddleware(), usercontroller.Delete)
+
+        router.POST("/photos", middlewares.AuthMiddleware(), productcontroller.Create)
+        router.GET("/photos", middlewares.AuthMiddleware(), productcontroller.Show)
+        router.PUT("/photos/:photoId", middlewares.AuthMiddleware(), productcontroller.Update)
+        router.DELETE("/photos/:photoId",middlewares.AuthMiddleware(), productcontroller.Delete)
 
     return router
 }
