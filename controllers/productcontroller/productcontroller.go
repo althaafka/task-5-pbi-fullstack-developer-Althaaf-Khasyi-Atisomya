@@ -22,3 +22,11 @@ func Create(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"data": photo})
 }
+
+func Show(c *gin.Context) {
+	var photo []models.Photo
+
+	database.DB.Find(&photo)
+
+	c.JSON(http.StatusOK, gin.H{"data": photo})
+}

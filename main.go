@@ -16,6 +16,7 @@ func main() {
 	r.PUT("/users/:userId", usercontroller.Update)
 
 	r.POST("/photos", productcontroller.Create)
+	r.GET("/photos",productcontroller.Show)
 
 	r.Run()
 }
