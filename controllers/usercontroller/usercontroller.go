@@ -5,6 +5,7 @@ import (
 
 	"github.com/althaafka/task-5-pbi-fullstack-developer-Althaaf-Khasyi-Atisomya.git/models"
 	"github.com/althaafka/task-5-pbi-fullstack-developer-Althaaf-Khasyi-Atisomya.git/database"
+	"github.com/althaafka/task-5-pbi-fullstack-developer-Althaaf-Khasyi-Atisomya.git/helpers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,7 +36,14 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	// Generate token
+    token, err := helpers.GenerateToken(user.ID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"token": token})
 
 }
 
