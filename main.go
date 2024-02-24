@@ -17,6 +17,8 @@ func main() {
 
 	r.POST("/photos", productcontroller.Create)
 	r.GET("/photos",productcontroller.Show)
+	r.PUT("/photos/:photoId", productcontroller.Update)
+	r.DELETE("/photos/:photoId", productcontroller.Delete)
 
 	r.Run()
 }
