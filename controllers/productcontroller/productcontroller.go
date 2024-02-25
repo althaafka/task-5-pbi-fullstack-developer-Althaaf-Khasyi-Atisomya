@@ -3,8 +3,8 @@ package productcontroller
 import (
 	"net/http"
 
-	"github.com/althaafka/task-5-pbi-fullstack-developer-Althaaf-Khasyi-Atisomya.git/models"
 	"github.com/althaafka/task-5-pbi-fullstack-developer-Althaaf-Khasyi-Atisomya.git/database"
+	"github.com/althaafka/task-5-pbi-fullstack-developer-Althaaf-Khasyi-Atisomya.git/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +14,13 @@ func Create(c *gin.Context) {
 
 	if err:= c.ShouldBindJSON(&photo); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userID, _ := c.Get("userID")
+
+	if (userID != photo.UserID) {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
@@ -46,6 +53,13 @@ func Update(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("userID")
+
+	if (userID != existingPhoto.UserID) {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
 	database.DB.Model(&existingPhoto).Updates(&photo)
 
 	c.JSON(http.StatusOK, gin.H{"data": existingPhoto})
@@ -56,6 +70,13 @@ func Delete(c *gin.Context) {
 	var photo models.Photo
 	if err := database.DB.Where("id = ?", photoId).First(&photo).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Photo not found"})
+		return
+	}
+
+	userID, _ := c.Get("userID")
+
+	if (userID != photo.UserID) {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 

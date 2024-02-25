@@ -36,14 +36,13 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Generate token
     token, err := helpers.GenerateToken(user.ID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
         return
     }
 
-    c.JSON(http.StatusOK, gin.H{"token": token})
+    c.JSON(http.StatusOK, gin.H{"id":user.ID, "token": token})
 
 }
 
@@ -65,4 +64,17 @@ func Update(c *gin.Context) {
 	database.DB.Model(&existingUser).Updates(&user)
 
 	c.JSON(http.StatusOK, gin.H{"data": existingUser})
+}
+
+func Delete(c *gin.Context) {
+	userId := c.Param("userId")
+	var user models.User
+	if err := database.DB.Where("id = ?", userId).First(&user).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	database.DB.Delete(&user)
+
+	c.JSON(http.StatusOK, gin.H{"data": user})
 }
