@@ -8,6 +8,7 @@ import (
 	"github.com/althaafka/task-5-pbi-fullstack-developer-Althaaf-Khasyi-Atisomya.git/helpers"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Register(c *gin.Context) {
@@ -17,6 +18,9 @@ func Register(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+    user.Password = string(hashedPassword)
 
 	database.DB.Create(&user)
 
@@ -31,8 +35,14 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if err := database.DB.Where("email = ? AND password = ?", user.Email, user.Password).First(&user).Error; err != nil {
+	if err := database.DB.Where("email = ?", user.Email).First(&user).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(user.Password))
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid login credentials"})
 		return
 	}
 
